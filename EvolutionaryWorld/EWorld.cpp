@@ -2,6 +2,7 @@
 
 #include "RandomGenerator.h"
 
+#include "EIndividual_orientation.h"
 
 EWorld::EWorld()
 {
@@ -10,20 +11,24 @@ EWorld::EWorld()
 
 	for (int i = 0; i < 10; i++)
 	{
-		population.emplace_back();
+		population.emplace_back(new EIndividual_orientation());
 	}
 }
 
 
 EWorld::~EWorld()
 {
+	for (auto& individual : population)
+	{
+		delete individual;
+	}
 }
 
 void EWorld::renderPopulation()
 {
 	for (auto& individual : population)
 	{
-		individual.render(VP);
+		individual->render(VP);
 	}
 }
 
@@ -38,30 +43,34 @@ void EWorld::evaluate()
 {
 	for (auto& ind : population)
 	{
-		ind.evaluate();
+		ind->evaluate();
 	}
 }
 
 void EWorld::selection()
 {
 	// Tournament selection
-	std::vector<EIndividual> selected;
+	std::vector<EIndividual*> selected;
 	for (int i = 0; i < population.size(); i++)
 	{
-		EIndividual a = population.at(RandomGenerator::randomInteger(0, population.size()));
-		EIndividual b = population.at(RandomGenerator::randomInteger(0, population.size()));
-		EIndividual c = population.at(RandomGenerator::randomInteger(0, population.size()));
+		EIndividual* a = population.at(RandomGenerator::randomInteger(0, population.size()));
+		EIndividual* b = population.at(RandomGenerator::randomInteger(0, population.size()));
+		EIndividual* c = population.at(RandomGenerator::randomInteger(0, population.size()));
 
-		if (a.getFitness() > b.getFitness())
+		if (a->getFitness() > b->getFitness())
 		{
-			a.getFitness() > c.getFitness() ? selected.push_back(a) : selected.push_back(c);
+			a->getFitness() > c->getFitness() ? selected.emplace_back(a->clone()) : selected.emplace_back(c->clone());
 		}
 		else
 		{
-			c.getFitness() > b.getFitness() ? selected.push_back(c) : selected.push_back(b);
+			c->getFitness() > b->getFitness() ? selected.emplace_back(c->clone()) : selected.emplace_back(b->clone());
 		}
 	}
 
+	for (auto& individual : population)
+	{
+		delete individual;
+	}
 	population = std::move(selected);
 }
 
@@ -71,10 +80,12 @@ void EWorld::crossOver_and_mutation()
 	{
 		if (RandomGenerator::randomFloat() < 0.6)
 		{
-			population[i] = population.at(i).crossOver(population.at(RandomGenerator::randomInteger(0, population.size())));
+			auto child = population.at(i)->crossOver(population.at(RandomGenerator::randomInteger(0, population.size())));
+			delete population[i];
+			population[i] = child;
 
 			// Mutate
-			population[i].mutate();
+			population[i]->mutate();
 		}
 	}
 }

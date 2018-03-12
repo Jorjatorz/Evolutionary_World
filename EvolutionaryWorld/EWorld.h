@@ -2,8 +2,9 @@
 
 #include <vector>
 
-#include "EIndividual.h"
 #include "Matrix4.h"
+
+class EIndividual;
 
 class EWorld
 {
@@ -16,7 +17,7 @@ public:
 	void processPopulation();
 
 private:
-	std::vector<EIndividual> population;
+	std::vector<EIndividual*> population;
 
 	void evaluate();
 	void selection();

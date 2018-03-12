@@ -8,17 +8,19 @@ class EIndividual
 public:
 	EIndividual();
 	EIndividual(const EIndividual& other);
-	~EIndividual();
+	virtual ~EIndividual();
 
 	void render(Matrix4 transform);
 
-	float getFitness();
+	float getFitness() const;
 
-	void evaluate();
-	EIndividual crossOver(EIndividual other);
-	void mutate();
+	virtual void evaluate() = 0;
+	virtual EIndividual* crossOver(EIndividual* other) = 0; // Returns a new allocated EIndividual (user should delete this new EIndividual manually)
+	virtual void mutate() = 0;
 
-private:
+	virtual EIndividual* clone() const = 0;
+
+protected:
 	float fitness;
 
 	EIndividualRenderer renderer;
