@@ -16,6 +16,11 @@ Matrix4::Matrix4(float diagonalValue)
 
 }
 
+Matrix4::Matrix4(const glm::mat4 & mat)
+	:_GLMMatrix(mat)
+{
+}
+
 
 Matrix4::~Matrix4()
 {

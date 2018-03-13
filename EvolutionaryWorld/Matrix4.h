@@ -12,6 +12,8 @@ public:
 	Matrix4();
 	//Creates a diagonal matrix given a diagonalvalue
 	Matrix4(float diagonalValue);
+	// Creates a matrix from a glm mat4 element (should not be used by the user)
+	Matrix4(const glm::mat4& mat);
 
 	~Matrix4();
 

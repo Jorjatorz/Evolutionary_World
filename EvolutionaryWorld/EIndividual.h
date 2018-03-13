@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EIndividualRenderer.h"
-#include "Vector3.h"
+#include "FTransform.h"
 
 class EIndividual
 {
@@ -10,7 +10,7 @@ public:
 	EIndividual(const EIndividual& other);
 	virtual ~EIndividual();
 
-	void render(Matrix4 transform);
+	void render(Matrix4 mat);
 
 	float getFitness() const;
 
@@ -24,10 +24,8 @@ protected:
 	float fitness;
 
 	EIndividualRenderer renderer;
-
-	Vector3 position;
-	float orientation; // Angle between the head and the top border of the screen
-
 	Vector3 color;
+
+	FTransform transform;
 };
 

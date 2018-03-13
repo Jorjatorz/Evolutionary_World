@@ -13,6 +13,7 @@ EWorld::EWorld()
 	{
 		population.emplace_back(new EIndividual_orientation());
 	}
+	evaluate();
 }
 
 
@@ -34,9 +35,9 @@ void EWorld::renderPopulation()
 
 void EWorld::processPopulation()
 {
-	evaluate();
 	selection();
 	crossOver_and_mutation();
+	evaluate();
 }
 
 void EWorld::evaluate()

@@ -5,7 +5,7 @@
 
 EIndividual_color::EIndividual_color()
 {
-	position = Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0);
+	transform.setPosition(Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0));
 }
 
 EIndividual_color::EIndividual_color(const EIndividual_color & copy)
@@ -42,7 +42,7 @@ EIndividual* EIndividual_color::crossOver(EIndividual * other)
 		}
 	}
 
-	child->position = Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0);
+	child->transform.setPosition(Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0));
 
 	return child;
 }

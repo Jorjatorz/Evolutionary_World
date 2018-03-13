@@ -4,7 +4,7 @@
 
 EIndividual_orientation::EIndividual_orientation()
 {
-	position = Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0);
+	transform.setPosition(Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0));
 }
 
 EIndividual_orientation::EIndividual_orientation(const EIndividual_orientation & other)
@@ -19,24 +19,24 @@ EIndividual_orientation::~EIndividual_orientation()
 
 void EIndividual_orientation::evaluate()
 {
+	float orientation = transform.getRotationQuaternion().toEuler().z;
 	fitness = 360 - std::abs(180 - orientation);
 
-	if (fitness == 360)
-		color = Vector3(0.0, 0.0, 1.0);
-	else
-		color = Vector3(1.0, 1.0, 0.0);
+	color = Vector3(1.0 - fitness/360, 0.0, fitness / 360);
 }
 
 EIndividual* EIndividual_orientation::crossOver(EIndividual * other)
 {
 	EIndividual_orientation* child = new EIndividual_orientation();
 
-	int min = orientation <= static_cast<EIndividual_orientation*>(other)->orientation ? orientation : static_cast<EIndividual_orientation*>(other)->orientation;
-	int max = orientation > static_cast<EIndividual_orientation*>(other)->orientation ? orientation : static_cast<EIndividual_orientation*>(other)->orientation;
+	float orientation = transform.getRotationQuaternion().toEuler().z;
+	float other_orientation = static_cast<EIndividual_orientation*>(other)->transform.getRotationQuaternion().toEuler().z;
+	float min = orientation <= other_orientation ? orientation : other_orientation;
+	float max = orientation > other_orientation ? orientation : other_orientation;
 	if(min == max)
-		child->orientation = min;
+		child->transform.setRotation(Quaternion(min, Vector3(0.0, 0.0, 1.0)));
 	else
-		child->orientation = RandomGenerator::randomInteger(min, max);
+		child->transform.setRotation(Quaternion(RandomGenerator::randomInteger(min, max), Vector3(0.0, 0.0, 1.0)));
 
 	return child;
 }
@@ -45,7 +45,7 @@ void EIndividual_orientation::mutate()
 {
 	if (RandomGenerator::randomFloat() < 0.06)
 	{
-		orientation = RandomGenerator::randomInteger(0, 359);
+		transform.setRotation(Quaternion(RandomGenerator::randomInteger(0, 359), Vector3(0.0, 0.0, 1.0)));
 	}
 }
 
