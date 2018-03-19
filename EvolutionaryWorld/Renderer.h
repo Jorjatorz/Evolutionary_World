@@ -2,11 +2,14 @@
 
 #include <SDL.h>
 
-class Renderer
+#include "Singleton.h"
+
+// Singleton class
+class Renderer : public Singleton<Renderer>
 {
 public:
 	Renderer();
-	~Renderer();
+	virtual ~Renderer();
 
 	void handleInput();
 	void preRendering();
