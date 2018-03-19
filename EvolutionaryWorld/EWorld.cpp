@@ -2,16 +2,16 @@
 
 #include "RandomGenerator.h"
 
-#include "EIndividual_orientation.h"
+#include "EIndividual_chaser.h"
 
 EWorld::EWorld()
 {
 	VP = Matrix4::createOrthoMatrix(1080, 720, 0.0, 1000);
 	VP.translate(Vector3(-1080/2.0, -720/2.0, 0.0)); // Put the camera centered so the bottom left corner is (0.0, 0.0)
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 50; i++)
 	{
-		population.emplace_back(new EIndividual_orientation());
+		population.emplace_back(new EIndividual_chaser(3, 3));
 	}
 	evaluate();
 }
@@ -54,10 +54,11 @@ void EWorld::selection()
 	std::vector<EIndividual*> selected;
 	for (int i = 0; i < population.size(); i++)
 	{
-		EIndividual* a = population.at(RandomGenerator::randomInteger(0, population.size()));
-		EIndividual* b = population.at(RandomGenerator::randomInteger(0, population.size()));
-		EIndividual* c = population.at(RandomGenerator::randomInteger(0, population.size()));
+		EIndividual* a = population.at(rand_generator.randomInteger(0, population.size() - 1));
+		EIndividual* b = population.at(rand_generator.randomInteger(0, population.size() - 1));
+		EIndividual* c = population.at(rand_generator.randomInteger(0, population.size() - 1));
 
+		// Maximizacion
 		if (a->getFitness() > b->getFitness())
 		{
 			a->getFitness() > c->getFitness() ? selected.emplace_back(a->clone()) : selected.emplace_back(c->clone());
@@ -79,9 +80,9 @@ void EWorld::crossOver_and_mutation()
 {
 	for (int i = 0; i < population.size(); i++)
 	{
-		if (RandomGenerator::randomFloat() < 0.6)
+		if (rand_generator.randomFloat() < 0.6)
 		{
-			auto child = population.at(i)->crossOver(population.at(RandomGenerator::randomInteger(0, population.size())));
+			auto child = population.at(i)->crossOver(population.at(rand_generator.randomInteger(0, population.size() - 1)));
 			delete population[i];
 			population[i] = child;
 

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Matrix4.h"
+#include "RandomGenerator.h"
 
 class EIndividual;
 
@@ -22,6 +23,8 @@ private:
 	void evaluate();
 	void selection();
 	void crossOver_and_mutation();
+
+	RandomGenerator rand_generator;
 
 	Matrix4 VP; // Projection * View matrix
 };

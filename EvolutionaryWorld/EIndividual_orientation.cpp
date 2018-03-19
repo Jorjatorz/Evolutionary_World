@@ -4,7 +4,8 @@
 
 EIndividual_orientation::EIndividual_orientation()
 {
-	transform.setPosition(Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0));
+	RandomGenerator generator;
+	transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
 }
 
 EIndividual_orientation::EIndividual_orientation(const EIndividual_orientation & other)
@@ -36,16 +37,20 @@ EIndividual* EIndividual_orientation::crossOver(EIndividual * other)
 	if(min == max)
 		child->transform.setRotation(Quaternion(min, Vector3(0.0, 0.0, 1.0)));
 	else
-		child->transform.setRotation(Quaternion(RandomGenerator::randomInteger(min, max), Vector3(0.0, 0.0, 1.0)));
+	{
+		RandomGenerator generator;
+		child->transform.setRotation(Quaternion(generator.randomInteger(min, max), Vector3(0.0, 0.0, 1.0)));
+	}
 
 	return child;
 }
 
 void EIndividual_orientation::mutate()
 {
-	if (RandomGenerator::randomFloat() < 0.06)
+	RandomGenerator generator;
+	if (generator.randomFloat() < 0.06)
 	{
-		transform.setRotation(Quaternion(RandomGenerator::randomInteger(0, 359), Vector3(0.0, 0.0, 1.0)));
+		transform.setRotation(Quaternion(generator.randomInteger(0, 359), Vector3(0.0, 0.0, 1.0)));
 	}
 }
 

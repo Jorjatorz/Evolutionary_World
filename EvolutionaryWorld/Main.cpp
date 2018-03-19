@@ -6,7 +6,7 @@ int main(int argc, char* argv[])
 	RenderWindow render;
 	EWorld world;
 
-	const int generations_per_second = 4;
+	const int generations_per_second = 1;
 	short int deltaTime = 0;
 	short int elapsedTime = 0;
 	while (true)

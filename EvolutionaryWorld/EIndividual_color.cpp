@@ -5,7 +5,8 @@
 
 EIndividual_color::EIndividual_color()
 {
-	transform.setPosition(Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0));
+	RandomGenerator generator;
+	transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
 }
 
 EIndividual_color::EIndividual_color(const EIndividual_color & copy)
@@ -25,8 +26,10 @@ void EIndividual_color::evaluate()
 
 EIndividual* EIndividual_color::crossOver(EIndividual * other)
 {
+	RandomGenerator generator;
+
 	EIndividual_color* child = new EIndividual_color(*this);
-	for (int i = RandomGenerator::randomInteger(0, 3); i < 3; i++)
+	for (int i = generator.randomInteger(0, 3); i < 3; i++)
 	{
 		switch (i)
 		{
@@ -42,27 +45,28 @@ EIndividual* EIndividual_color::crossOver(EIndividual * other)
 		}
 	}
 
-	child->transform.setPosition(Vector3(RandomGenerator::randomInteger(0, 1080), RandomGenerator::randomInteger(0, 720), 0.0));
+	child->transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
 
 	return child;
 }
 
 void EIndividual_color::mutate()
 {
+	RandomGenerator generator;
 	for (int i = 0; i < 3; i++)
 	{
-		if (RandomGenerator::randomFloat() < 0.06)
+		if (generator.randomFloat() < 0.06)
 		{
 			switch (i)
 			{
 			case 0:
-				color.x = RandomGenerator::randomFloat();
+				color.x = generator.randomFloat();
 				break;
 			case 1:
-				color.y = RandomGenerator::randomFloat();
+				color.y = generator.randomFloat();
 				break;
 			case 2:
-				color.z = RandomGenerator::randomFloat();
+				color.z = generator.randomFloat();
 				break;
 			}
 		}
