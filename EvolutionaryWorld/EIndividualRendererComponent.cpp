@@ -1,13 +1,16 @@
-#include "EIndividualRenderer.h"
+#include "EIndividualRendererComponent.h"
 
 #include "Shader.h"
+#include "EIndividual.h"
 
-short int EIndividualRenderer::references = 0;
-Shader* EIndividualRenderer::shader = nullptr;
-GLuint EIndividualRenderer::vao = -1;
-GLuint EIndividualRenderer::vertexBuffer = -1;
+short int EIndividualRendererComponent::references = 0;
+Shader* EIndividualRendererComponent::shader = nullptr;
+GLuint EIndividualRendererComponent::vao = -1;
+GLuint EIndividualRendererComponent::vertexBuffer = -1;
 
-EIndividualRenderer::EIndividualRenderer()
+EIndividualRendererComponent::EIndividualRendererComponent(Object* owner)
+	:RenderingComponent(owner),
+	color(1.0, 1.0, 0.0)
 {
 	// Load shader
 	if (references == 0)
@@ -40,7 +43,7 @@ EIndividualRenderer::EIndividualRenderer()
 }
 
 
-EIndividualRenderer::~EIndividualRenderer()
+EIndividualRendererComponent::~EIndividualRendererComponent()
 {
 	references--;
 	if (references == 0)
@@ -51,10 +54,12 @@ EIndividualRenderer::~EIndividualRenderer()
 	}
 }
 
-void EIndividualRenderer::render(const Matrix4& transform, const Vector3& color)
+void EIndividualRendererComponent::render(const Matrix4& projection)
 {
+	EIndividual* ind = static_cast<EIndividual*>(owner);
+
 	shader->bind();
-	shader->uniformMatrix("MVP", transform);
+	shader->uniformMatrix("MVP", projection * ind->getTransform_pointer()->getTransformationMatrix());
 	shader->uniform("color", color);
 
 	glBindVertexArray(vao);
@@ -62,4 +67,9 @@ void EIndividualRenderer::render(const Matrix4& transform, const Vector3& color)
 	glBindVertexArray(0);
 
 	shader->unBind();
+}
+
+EIndividualRendererComponent * EIndividualRendererComponent::clone(Object * newOwner) const
+{
+	return new EIndividualRendererComponent(newOwner);
 }

@@ -1,8 +1,11 @@
 #include "Renderer.h"
 
 #include <iostream>
-
 #include <GL\glew.h>
+
+#include "Vector3.h"
+
+#include "RenderingComponent.h"
 
 Renderer::Renderer()
 {
@@ -43,6 +46,9 @@ Renderer::Renderer()
 	// Setup OpenGL
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glDisable(GL_DEPTH_TEST);
+
+	projectionMatrix = Matrix4::createOrthoMatrix(1080, 720, 0.0, 1000);
+	projectionMatrix.translate(Vector3(-1080 / 2.0, -720 / 2.0, 0.0)); // Put the camera centered so the bottom left corner is (0.0, 0.0)
 }
 
 
@@ -76,7 +82,32 @@ void Renderer::preRendering()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+void Renderer::renderFrame()
+{
+	for (auto& rComp : renderingComponents_list)
+	{
+		rComp->render(projectionMatrix);
+	}
+}
+
 void Renderer::swapBuffers()
 {
 	SDL_GL_SwapWindow(window_SDL);
+}
+
+void Renderer::attachRenderingComponent(RenderingComponent * comp)
+{
+	renderingComponents_list.push_back(comp);
+}
+
+void Renderer::detachRenderingComponent(RenderingComponent * comp)
+{
+	for (auto it = renderingComponents_list.begin(); it != renderingComponents_list.end(); ++it)
+	{
+		if (*it == comp)
+		{
+			renderingComponents_list.erase(it);
+			return;
+		}
+	}
 }

@@ -7,9 +7,6 @@
 
 EWorld::EWorld()
 {
-	VP = Matrix4::createOrthoMatrix(1080, 720, 0.0, 1000);
-	VP.translate(Vector3(-1080/2.0, -720/2.0, 0.0)); // Put the camera centered so the bottom left corner is (0.0, 0.0)
-
 	for (int i = 0; i < 50; i++)
 	{
 		population.emplace_back(new EIndividual_chaser(3, 3));
@@ -28,14 +25,6 @@ EWorld::~EWorld()
 	}
 }
 
-void EWorld::renderPopulation()
-{
-	for (auto& individual : population)
-	{
-		individual->render(VP);
-	}
-}
-
 void EWorld::processPopulation_classic()
 {
 	const int generations_per_second = 1;
@@ -51,7 +40,7 @@ void EWorld::processPopulation_classic()
 
 void EWorld::processPopulation_steps()
 {
-	if (generation_timer->getTime_milliseconds() > 5000)
+	if (generation_timer->getTime_milliseconds() > 3000)
 	{
 		selection();
 		crossOver_and_mutation();

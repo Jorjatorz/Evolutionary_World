@@ -22,8 +22,6 @@ void EIndividual_orientation::evaluate()
 {
 	float orientation = transform.getRotationQuaternion().toEuler().z;
 	fitness = 360 - std::abs(180 - orientation);
-
-	color = Vector3(1.0 - fitness/360, 0.0, fitness / 360);
 }
 
 EIndividual* EIndividual_orientation::crossOver(EIndividual * other)

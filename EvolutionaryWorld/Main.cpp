@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 		world.processPopulation_steps();
 
 		render.preRendering();
-		world.renderPopulation();
+		render.renderFrame();
 		render.swapBuffers();
 
 		deltaTime = time_manager.getTotalExecutionTime() - frame_start;

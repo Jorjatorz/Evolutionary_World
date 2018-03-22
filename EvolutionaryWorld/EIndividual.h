@@ -1,16 +1,13 @@
 #pragma once
 
-#include "EIndividualRenderer.h"
-#include "FTransform.h"
+#include "Object.h"
 
-class EIndividual
+class EIndividual : public Object
 {
 public:
 	EIndividual();
 	EIndividual(const EIndividual& other);
 	virtual ~EIndividual();
-
-	void render(Matrix4 mat);
 
 	float getFitness() const;
 
@@ -23,14 +20,7 @@ public:
 
 	virtual EIndividual* clone() const = 0;
 
-	FTransform* getTransform_pointer();
-
 protected:
 	float fitness;
-
-	EIndividualRenderer renderer;
-	Vector3 color;
-
-	FTransform transform;
 };
 

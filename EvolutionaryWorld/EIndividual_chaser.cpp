@@ -5,13 +5,15 @@
 #include "Renderer.h"
 
 EIndividual_chaser::EIndividual_chaser()
+	:EIndividual()
 {
 	RandomGenerator generator;
 	transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
 }
 
 EIndividual_chaser::EIndividual_chaser(int in, int out)
-	:nn(1, 1)
+	:EIndividual(),
+	nn(1, 1)
 {
 	RandomGenerator generator;
 	transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
@@ -88,6 +90,9 @@ EIndividual * EIndividual_chaser::clone() const
 
 void EIndividual_chaser::reset_status()
 {
+	transform = FTransform();
+	RandomGenerator generator;
+	transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
 	transform.setRotation(Quaternion());
 	fitness = 0.0;
 }

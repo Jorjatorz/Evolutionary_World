@@ -14,8 +14,6 @@ public:
 	EWorld();
 	~EWorld();
 
-	void renderPopulation();
-
 	void processPopulation_classic();
 	void processPopulation_steps();
 
@@ -28,7 +26,5 @@ private:
 
 	RandomGenerator rand_generator;
 	Timer* generation_timer;
-
-	Matrix4 VP; // Projection * View matrix
 };
 

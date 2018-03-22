@@ -371,7 +371,7 @@ void NEATNN::mutate()
 			NodeConnection::global_innovation_number++;
 
 			// Remove old connection from incoming
-			for (auto it = old_connection->out->incoming_connections.begin(); it != old_connection->out->incoming_connections.end(); it++)
+			for (auto it = old_connection->out->incoming_connections.begin(); it != old_connection->out->incoming_connections.end(); ++it)
 			{
 				if (*it == old_connection)
 				{
