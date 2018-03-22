@@ -112,7 +112,10 @@ void NEATNN::execute(std::vector<float> input)
 {
 	// Check that input is correct and set the value to the input neurons
 	if (input.size() != input_nodes_num)
+	{
+		FLog(FLog::FAILURE, "Input vector doesn't match number of input nodes");
 		return;
+	}
 
 	for (int i = 0; i < input_nodes_num; i++)
 	{
@@ -166,17 +169,21 @@ void NEATNN::execute(std::vector<float> input)
 	}
 }
 
-std::vector<float> NEATNN::getOutput()
+std::vector<float> NEATNN::getOutput(const Activation_function a_func)
 {
 	std::vector<float> toRet;
 	for (int i = input_nodes_num; i < output_nodes_num + input_nodes_num; i++)
 	{
-		toRet.emplace_back(nodes_list.at(i)->value);
+		if(a_func == Activation_function::RELU)
+			toRet.emplace_back(nodes_list.at(i)->value);
+		else if (a_func == Activation_function::TANH)
+		{
+			float value = (std::exp(nodes_list.at(i)->activation_sum) - std::exp(-nodes_list.at(i)->activation_sum)) / (std::exp(nodes_list.at(i)->activation_sum) + std::exp(-nodes_list.at(i)->activation_sum));
+			toRet.emplace_back(value);
+		}
 	}
 
 	return toRet;
-
-	return std::vector<float>();
 }
 
 NEATNN NEATNN::crossOver(const NEATNN & parent2)
@@ -308,7 +315,7 @@ NEATNN NEATNN::crossOver(const NEATNN & parent2)
 	}
 
 	child.input_nodes_num = input_nodes_num;
-	child.output_nodes_num = input_nodes_num;
+	child.output_nodes_num = output_nodes_num;
 	child.node_index = node_index >= parent2.node_index ? node_index : parent2.node_index;
 
 	// NOTE - When returning the child the copy iteration is in charge of removing recursive connections

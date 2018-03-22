@@ -31,7 +31,7 @@ public:
 		_singleton = static_cast<T*>(this); //allocate the singleton
 	}
 
-	~Singleton(void) //Default destructor that is in charge of erasing the singleton reference
+	virtual ~Singleton(void) //Default destructor that is in charge of erasing the singleton reference
 	{
 		if (!_singleton)
 		{

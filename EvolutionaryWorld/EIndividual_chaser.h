@@ -16,6 +16,7 @@ public:
 	virtual EIndividual * crossOver(EIndividual * other) override;
 	virtual void mutate() override;
 	virtual EIndividual * clone() const override;
+	virtual void reset_status() override;
 
 private:
 	NEATNN nn;

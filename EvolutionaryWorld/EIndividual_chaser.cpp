@@ -1,6 +1,8 @@
 #include "EIndividual_chaser.h"
 
 #include "RandomGenerator.h"
+#include "FLog.h"
+#include "Renderer.h"
 
 EIndividual_chaser::EIndividual_chaser()
 {
@@ -9,7 +11,7 @@ EIndividual_chaser::EIndividual_chaser()
 }
 
 EIndividual_chaser::EIndividual_chaser(int in, int out)
-	:nn(3, 3)
+	:nn(1, 1)
 {
 	RandomGenerator generator;
 	transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
@@ -30,17 +32,34 @@ EIndividual_chaser::~EIndividual_chaser()
 
 void EIndividual_chaser::evaluate()
 {
-	Vector3 target = Vector3(255, 0.0, 0.0);
-	nn.execute(std::initializer_list<float>{target.x, target.y, target.z});
+	Vector3 target = Vector3(Renderer::getInstance()->mouseX, Renderer::getInstance()->mouseY, 0.0);
 
-	std::vector<float> output = nn.getOutput();
-	Vector3 output_v = Vector3(output.at(0), output.at(1), output.at(2));
+	// Compute angle between individual and objective
+	Vector3 dir = transform.getRotationQuaternion() * Vector3(0.0, 1.0, 0.0);
+	dir.normalize();
+	Vector3 objective = target - transform.getPosition();
+	objective.normalize();
+	float angle = Vector3::dot(objective, dir);
+	if (angle > 1.0f)
+		angle = 1.0f;
+	if (angle < -1.0f)
+		angle = 1.0f;
+	angle = std::acosf(angle) * 57.295779513082320876798154814105;
 
+	// Set angle sign depending on the side of the objective (to the left or right of the individual)
+	Vector3 up = Vector3(0.0, 0.0, 1.0);
+	Vector3 right = Vector3::cross(up, dir);
+	if (Vector3::dot(right, objective) > 0.0)
+		angle = -angle;
+	angle = angle / 180.0f; // Set value from -1 to 1
 
-	Vector3 aux = target - output_v;
-	fitness = 100000 - std::abs(aux.x) - std::abs(aux.y) - std::abs(aux.z);
+	nn.execute(std::initializer_list<float>{angle});
 
-	color = output_v / 255.0;
+	std::vector<float> output = nn.getOutput(NEATNN::Activation_function::TANH);
+	transform.rotate(Quaternion(output.at(0) * 180.0f, Vector3(0.0, 0.0, 1.0)));
+
+	fitness += 1 - std::abs(angle);
+	transform.translate(transform.getRotationQuaternion() * Vector3(0.0, 2.0, 0.0));
 	
 }
 
@@ -65,4 +84,10 @@ void EIndividual_chaser::mutate()
 EIndividual * EIndividual_chaser::clone() const
 {
 	return new EIndividual_chaser(*this);
+}
+
+void EIndividual_chaser::reset_status()
+{
+	transform.setRotation(Quaternion());
+	fitness = 0.0;
 }

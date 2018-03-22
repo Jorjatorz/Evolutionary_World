@@ -28,3 +28,16 @@ float EIndividual::getFitness() const
 {
 	return fitness;
 }
+
+void EIndividual::reset_status()
+{
+	transform = FTransform();
+	transform.setPosition(Vector3(540, 360, 0.0));
+	color = Vector3(1.0);
+	fitness = 0.0;
+}
+
+FTransform * EIndividual::getTransform_pointer()
+{
+	return &transform;
+}

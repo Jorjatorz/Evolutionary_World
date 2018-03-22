@@ -6,7 +6,7 @@
 #include <boost/random/uniform_int_distribution.hpp>
 #include <boost/random/normal_distribution.hpp>
 
-boost::mt19937 RandomGenerator::global_generator(0);
+boost::mt19937 RandomGenerator::global_generator(std::time(0));
 
 RandomGenerator::RandomGenerator()
 {

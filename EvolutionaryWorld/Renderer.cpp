@@ -63,6 +63,11 @@ void Renderer::handleInput()
 	SDL_Event mEvent;
 	while (SDL_PollEvent(&mEvent))
 	{
+		if (mEvent.type == SDL_MOUSEMOTION)
+		{
+			mouseX = mEvent.motion.x;
+			mouseY = 720 - mEvent.motion.y;
+		}
 	}
 }
 

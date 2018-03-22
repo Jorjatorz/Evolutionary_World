@@ -255,7 +255,8 @@ float Vector3::dot(const Vector3& a, const Vector3& b)
 void Vector3::normalize()
 {
 	glm::vec3 aux(x, y, z);
-	aux = glm::normalize(aux);
+	if(aux != glm::vec3(0.0))
+		aux = glm::normalize(aux);
 
 	x = aux.x;
 	y = aux.y;

@@ -1,8 +1,9 @@
 #include "EWorld.h"
 
 #include "RandomGenerator.h"
-
+#include "TimerManager.h"
 #include "EIndividual_chaser.h"
+
 
 EWorld::EWorld()
 {
@@ -14,6 +15,8 @@ EWorld::EWorld()
 		population.emplace_back(new EIndividual_chaser(3, 3));
 	}
 	evaluate();
+
+	generation_timer = TimerManager::getInstance()->addTimer();
 }
 
 
@@ -33,10 +36,35 @@ void EWorld::renderPopulation()
 	}
 }
 
-void EWorld::processPopulation()
+void EWorld::processPopulation_classic()
 {
-	selection();
-	crossOver_and_mutation();
+	const int generations_per_second = 1;
+	if (generation_timer->getTime_milliseconds() > 1000 / generations_per_second)
+	{
+		selection();
+		crossOver_and_mutation();
+		evaluate();
+
+		generation_timer->reset();
+	}
+}
+
+void EWorld::processPopulation_steps()
+{
+	if (generation_timer->getTime_milliseconds() > 5000)
+	{
+		selection();
+		crossOver_and_mutation();
+
+		// Set random position
+		for (auto& ind : population)
+		{
+			
+			ind->reset_status();
+		}
+
+		generation_timer->reset();
+	}
 	evaluate();
 }
 

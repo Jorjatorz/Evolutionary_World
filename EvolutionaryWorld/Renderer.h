@@ -9,11 +9,14 @@ class Renderer : public Singleton<Renderer>
 {
 public:
 	Renderer();
-	virtual ~Renderer();
+	~Renderer();
 
 	void handleInput();
 	void preRendering();
 	void swapBuffers();
+
+	int mouseX;
+	int mouseY;
 
 private:
 	SDL_Window* window_SDL;

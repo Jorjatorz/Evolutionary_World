@@ -6,6 +6,7 @@
 #include "RandomGenerator.h"
 
 class EIndividual;
+class Timer;
 
 class EWorld
 {
@@ -15,7 +16,8 @@ public:
 
 	void renderPopulation();
 
-	void processPopulation();
+	void processPopulation_classic();
+	void processPopulation_steps();
 
 private:
 	std::vector<EIndividual*> population;
@@ -25,6 +27,7 @@ private:
 	void crossOver_and_mutation();
 
 	RandomGenerator rand_generator;
+	Timer* generation_timer;
 
 	Matrix4 VP; // Projection * View matrix
 };
