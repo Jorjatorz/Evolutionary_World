@@ -1,30 +1,14 @@
 #pragma once
 
-#include <vector>
-
-#include "Matrix4.h"
-#include "RandomGenerator.h"
-
-class EIndividual;
-class Timer;
-
+// Interface class that defines a world
 class EWorld
 {
 public:
 	EWorld();
-	~EWorld();
+	virtual ~EWorld();
 
-	void processPopulation_classic();
-	void processPopulation_steps();
-
-private:
-	std::vector<EIndividual*> population;
-
-	void evaluate();
-	void selection();
-	void crossOver_and_mutation();
-
-	RandomGenerator rand_generator;
-	Timer* generation_timer;
+	/*void processPopulation_classic();
+	void processPopulation_steps();*/
+	virtual void tickWorld() = 0;
 };
 
