@@ -5,6 +5,10 @@
 #include <unordered_set>
 #include "FLog.h"
 
+const float NEATNN::weight_mutation_probability = 0.5;
+const float NEATNN::add_connection_probability = 0.25;
+const float NEATNN::add_node_probability = 0.05;
+
 NEATNN::NEATNN()
 {
 	node_index = 0;
@@ -369,66 +373,63 @@ void NEATNN::mutate()
 	// Weights mutation
 	for (auto& connection : connections)
 	{
-		if (rand_generator.randomFloat() < 0.5)
+		if (rand_generator.randomFloat() < weight_mutation_probability)
 		{
 			connection->weight += rand_generator.gaussianFloat(0.0, 0.05);
 		}
 	}
 
 	// Structural mutation
-	if (rand_generator.randomFloat() < 0.5)
+	// Add connection
+	if (rand_generator.randomFloat() < add_connection_probability)
 	{
-		// Add connection
-		if (rand_generator.randomFloat() < 0.5)
+		// Choose nodes
+		Node* in_node = nodes_list.at(rand_generator.randomInteger(0, nodes_list.size() - 1));
+		Node* out_node;
+		do {
+			out_node = nodes_list.at(rand_generator.randomInteger(0, nodes_list.size() - 1)); // Dont include input nodes
+		} while (input_nodes_list.find(out_node->index) != input_nodes_list.end());
+		// Search if connection already exits
+		bool exists = false;
+		for (auto it : out_node->incoming_connections)
 		{
-			// Choose nodes
-			Node* in_node = nodes_list.at(rand_generator.randomInteger(0, nodes_list.size() - 1));
-			Node* out_node;
-			do {
-				out_node = nodes_list.at(rand_generator.randomInteger(0, nodes_list.size() - 1)); // Dont include input nodes
-			} while (input_nodes_list.find(out_node->index) != input_nodes_list.end());
-			// Search if connection already exits
-			bool exists = false;
-			for (auto it : out_node->incoming_connections)
-			{
-				if (it->in->index == in_node->index)
-					exists = true;
-			}
+			if (it->in->index == in_node->index)
+				exists = true;
+		}
 
-			if (!exists)
-			{
-				add_connection(in_node, out_node, rand_generator.randomFloat(-1.0, 1.0));
-				NodeConnection::global_innovation_number++;
-			}
+		if (!exists)
+		{
+			add_connection(in_node, out_node, rand_generator.randomFloat(-1.0, 1.0));
+			NodeConnection::global_innovation_number++;
+		}
 			
-		}
-		// Add node
-		if (rand_generator.randomFloat() < 0.05)
+	}
+	// Add node
+	if (rand_generator.randomFloat() < add_node_probability)
+	{
+		Node* new_node = add_node();
+
+		// Choose random connection
+		int connection_index = rand_generator.randomInteger(0, connections.size() - 1);
+		NodeConnection* old_connection = connections.at(connection_index);
+		add_connection(old_connection->in, new_node, 1.0);
+		NodeConnection::global_innovation_number++;
+		add_connection(new_node, old_connection->out, old_connection->weight);
+		NodeConnection::global_innovation_number++;
+
+		// Remove old connection from incoming
+		for (auto it = old_connection->out->incoming_connections.begin(); it != old_connection->out->incoming_connections.end(); ++it)
 		{
-			Node* new_node = add_node();
-
-			// Choose random connection
-			int connection_index = rand_generator.randomInteger(0, connections.size() - 1);
-			NodeConnection* old_connection = connections.at(connection_index);
-			add_connection(old_connection->in, new_node, 1.0);
-			NodeConnection::global_innovation_number++;
-			add_connection(new_node, old_connection->out, old_connection->weight);
-			NodeConnection::global_innovation_number++;
-
-			// Remove old connection from incoming
-			for (auto it = old_connection->out->incoming_connections.begin(); it != old_connection->out->incoming_connections.end(); ++it)
+			if (*it == old_connection)
 			{
-				if (*it == old_connection)
-				{
-					old_connection->out->incoming_connections.erase(it);
-					break;
-				}
+				old_connection->out->incoming_connections.erase(it);
+				break;
 			}
-
-			// Delete old connection from connections
-			delete old_connection;
-			connections.erase(connections.begin() + connection_index);
 		}
+
+		// Delete old connection from connections
+		delete old_connection;
+		connections.erase(connections.begin() + connection_index);
 	}
 
 	//FLog(FLog::INFO, "%d", connections.size());

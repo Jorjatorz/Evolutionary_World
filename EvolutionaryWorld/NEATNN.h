@@ -31,8 +31,11 @@ public:
 	NEATNN crossOver(const NEATNN& parent2);
 	void mutate();
 
+	static const float weight_mutation_probability;
+	static const float add_node_probability;
+	static const float add_connection_probability;
+
 private:
-	int node_index; // Keeps track of the maximun index to give to a node
 
 	struct Node;
 	struct NodeConnection
@@ -66,6 +69,8 @@ private:
 	std::vector<Node*> nodes_list;
 	std::unordered_map<short int, Node*> input_nodes_list, output_nodes_list; // Auxiliary map for fast access to input/output nodes
 	std::vector<NodeConnection*> connections;
+
+	int node_index; // Keeps track of the maximun index to give to a node
 
 
 	Node* add_node();
