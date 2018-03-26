@@ -32,8 +32,9 @@ public:
 	void mutate();
 
 	static const float weight_mutation_probability;
-	static const float add_node_probability;
+	static const float remove_connection_probability;
 	static const float add_connection_probability;
+	static const float add_node_probability;
 
 private:
 

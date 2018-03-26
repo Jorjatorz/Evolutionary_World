@@ -7,6 +7,7 @@
 
 const float NEATNN::weight_mutation_probability = 0.5;
 const float NEATNN::add_connection_probability = 0.25;
+const float NEATNN::remove_connection_probability = 0.05;
 const float NEATNN::add_node_probability = 0.05;
 
 NEATNN::NEATNN()
@@ -355,11 +356,33 @@ NEATNN NEATNN::crossOver(const NEATNN & parent2)
 	// Set input and output nodes maps
 	for (auto& node : input_nodes_list)
 	{
-		child.input_nodes_list.insert(std::make_pair(node.first, nodes_copied[node.second->index]));
+		// Make sure input node is created and added
+		auto input_node_it = nodes_copied.find(node.second->index);
+		if (input_node_it != nodes_copied.end())
+		{
+			child.input_nodes_list.insert(std::make_pair(node.first, input_node_it->second));
+		}
+		else
+		{
+			Node* newNode = new Node(*(node.second));
+			child.input_nodes_list.insert(std::make_pair(node.first, newNode));
+			child.nodes_list.push_back(newNode);
+		}
 	}
 	for (auto& node : output_nodes_list)
 	{
-		child.output_nodes_list.insert(std::make_pair(node.first, nodes_copied[node.second->index]));
+		// Make sure output node is created and added
+		auto output_node_it = nodes_copied.find(node.second->index);
+		if (output_node_it != nodes_copied.end())
+		{
+			child.output_nodes_list.insert(std::make_pair(node.first, output_node_it->second));
+		}
+		else
+		{
+			Node* newNode = new Node(*(node.second));
+			child.output_nodes_list.insert(std::make_pair(node.first, newNode));
+			child.nodes_list.push_back(newNode);
+		}
 	}
 
 	child.node_index = node_index >= parent2.node_index ? node_index : parent2.node_index;
@@ -404,8 +427,21 @@ void NEATNN::mutate()
 		}
 			
 	}
+	// Remove connection
+	if ((rand_generator.randomFloat() < remove_connection_probability) && connections.size() > 0)
+	{
+		// Choose random connection
+		int connection_index = rand_generator.randomInteger(0, connections.size() - 1);
+		NodeConnection* old_connection = connections.at(connection_index);
+
+		// Remove from incoming list and connections list
+		old_connection->out->incoming_connections.remove(old_connection);
+		connections.erase(connections.begin() + connection_index);
+		delete old_connection;
+
+	}
 	// Add node
-	if (rand_generator.randomFloat() < add_node_probability)
+	if (rand_generator.randomFloat() < add_node_probability && connections.size() > 0)
 	{
 		Node* new_node = add_node();
 
