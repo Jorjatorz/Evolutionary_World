@@ -2,23 +2,31 @@
 
 #include "RandomGenerator.h"
 #include "TimerManager.h"
-#include "EIndividual_chaser.h"
+#include "EIndividual_eater.h"
+#include "OFood.h"
 
 EWorld_food::EWorld_food()
 	:EWorld()
 {
 	for (int i = 0; i < 50; i++)
 	{
-		population.emplace_back(new EIndividual_chaser(3, 3));
+		population.emplace_back(new EIndividual_eater(1, 2));
 	}
 	evaluate();
 
 	generation_timer = TimerManager::getInstance()->addTimer();
+
+	// Add spawner
+	TimerManager::getInstance()->addTimer(this, &EWorld_food::spawnFood, 250, true);
 }
 
 
 EWorld_food::~EWorld_food()
 {
+	for (auto& food : food_vector)
+	{
+		delete food;
+	}
 	for (auto& individual : population)
 	{
 		delete individual;
@@ -27,57 +35,70 @@ EWorld_food::~EWorld_food()
 
 void EWorld_food::tickWorld()
 {
-	if (generation_timer->getTime_milliseconds() > 3000)
-	{
-		selection();
-		crossOver_and_mutation();
-
-		// Set random position
-		for (auto& ind : population)
-		{
-
-			ind->reset_status();
-		}
-
-		generation_timer->reset();
-	}
 	evaluate();
+}
+
+std::vector<OFood*>* EWorld_food::getFoodsVector_ptr()
+{
+	return &food_vector;
 }
 
 void EWorld_food::evaluate()
 {
-	for (auto& ind : population)
+	for (auto ind_it = population.begin(); ind_it != population.end();)
 	{
-		ind->evaluate();
-	}
-}
+		(*ind_it)->evaluate();
 
-void EWorld_food::selection()
-{
-	// Tournament selection
-	std::vector<EIndividual*> selected;
-	for (int i = 0; i < population.size(); i++)
-	{
-		EIndividual* a = population.at(rand_generator.randomInteger(0, population.size() - 1));
-		EIndividual* b = population.at(rand_generator.randomInteger(0, population.size() - 1));
-		EIndividual* c = population.at(rand_generator.randomInteger(0, population.size() - 1));
-
-		// Maximizacion
-		if (a->getFitness() > b->getFitness())
+		if (static_cast<EIndividual_eater*>(*ind_it)->isDead())
 		{
-			a->getFitness() > c->getFitness() ? selected.emplace_back(a->clone()) : selected.emplace_back(c->clone());
+			// Select random element
+			EIndividual* parent2 = selectIndividual();
+			// Cross
+			auto child = (*ind_it)->crossOver(parent2);
+			delete *ind_it;
+			ind_it = population.erase(ind_it);
+			population.push_back(child);
+
+			// Mutate
+			child->mutate();
 		}
 		else
 		{
-			c->getFitness() > b->getFitness() ? selected.emplace_back(c->clone()) : selected.emplace_back(b->clone());
+			++ind_it;
 		}
 	}
+}
 
-	for (auto& individual : population)
+EIndividual* EWorld_food::selectIndividual()
+{
+	// Tournament selection
+	EIndividual* a = population.at(rand_generator.randomInteger(0, population.size() - 1));
+	EIndividual* b = population.at(rand_generator.randomInteger(0, population.size() - 1));
+	EIndividual* c = population.at(rand_generator.randomInteger(0, population.size() - 1));
+
+	// Maximizacion
+	if (a->getFitness() > b->getFitness())
 	{
-		delete individual;
+		if (a->getFitness() > c->getFitness())
+		{
+			return a;
+		}
+		else
+		{
+			return c;
+		}
 	}
-	population = std::move(selected);
+	else
+	{
+		if (c->getFitness() > b->getFitness())
+		{
+			return c;
+		}
+		else
+		{
+			return b;
+		}
+	}
 }
 
 void EWorld_food::crossOver_and_mutation()
@@ -94,4 +115,9 @@ void EWorld_food::crossOver_and_mutation()
 			population[i]->mutate();
 		}
 	}
+}
+
+void EWorld_food::spawnFood()
+{
+	food_vector.push_back(new OFood());
 }

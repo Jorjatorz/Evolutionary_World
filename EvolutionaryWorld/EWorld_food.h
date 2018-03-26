@@ -9,6 +9,7 @@
 
 class EIndividual;
 class Timer;
+class OFood;
 
 // World that spawns food
 class EWorld_food : public EWorld
@@ -19,14 +20,19 @@ public:
 
 	virtual void tickWorld();
 
+	std::vector<OFood*>* getFoodsVector_ptr();
+
 private:
 	std::vector<EIndividual*> population;
 
 	void evaluate();
-	void selection();
+	EIndividual* selectIndividual();
 	void crossOver_and_mutation();
 
 	RandomGenerator rand_generator;
 	Timer* generation_timer;
+
+	std::vector<OFood*> food_vector;
+	void spawnFood();
 };
 

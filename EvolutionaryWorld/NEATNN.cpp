@@ -8,15 +8,24 @@
 NEATNN::NEATNN()
 {
 	node_index = 0;
-	input_nodes_num = output_nodes_num = 0;
 }
 
 NEATNN::NEATNN(int input_num, int output_num)
 	:node_index(0)
 {
-	for (int i = 0; i < input_num + output_num; i++)
+	// Add bias
+	input_num = input_num + 1;
+	
+	//Add input (+bias) and putput nodes
+	for (int i = 0; i < input_num; i++)
 	{
-		add_node();
+		Node* n = add_node();
+		input_nodes_list.insert(std::make_pair(n->index, n));
+	}
+	for (int i = 0; i < output_num; i++)
+	{
+		Node* n = add_node();
+		output_nodes_list.insert(std::make_pair(n->index, n));
 	}
 
 	// Connect every input to every output
@@ -32,15 +41,10 @@ NEATNN::NEATNN(int input_num, int output_num)
 			index++;
 		}
 	}
-
-	input_nodes_num = input_num;
-	output_nodes_num = output_num;
 }
 
 NEATNN::NEATNN(const NEATNN & other)
-	:input_nodes_num(other.input_nodes_num),
-	output_nodes_num(other.output_nodes_num),
-	node_index(other.node_index)
+	:node_index(other.node_index)
 {
 
 	// Deep copy node_list and connections
@@ -51,6 +55,15 @@ NEATNN::NEATNN(const NEATNN & other)
 		nodes_list.push_back(newNode);
 		node_map.insert(std::make_pair(node->index, newNode));
 	}
+	for (auto& node : other.input_nodes_list)
+	{
+		input_nodes_list.insert(std::make_pair(node.first, node_map[node.first]));
+	}
+	for (auto& node : other.output_nodes_list)
+	{
+		output_nodes_list.insert(std::make_pair(node.first, node_map[node.first]));
+	}
+
 	for (auto& connection : other.connections)
 	{
 		NodeConnection* newCon = add_connection(node_map[connection->in->index], node_map[connection->out->index], connection->weight);
@@ -85,9 +98,9 @@ NEATNN& NEATNN::operator=(const NEATNN & other)
 	}
 	connections.clear();
 	nodes_list.clear();
+	input_nodes_list.clear();
+	output_nodes_list.clear();
 
-	input_nodes_num = other.input_nodes_num;
-	output_nodes_num = other.output_nodes_num;
 	node_index = other.node_index;
 
 	// Deep copy node_list and connections
@@ -98,6 +111,15 @@ NEATNN& NEATNN::operator=(const NEATNN & other)
 		nodes_list.push_back(newNode);
 		node_map.insert(std::make_pair(node->index, newNode));
 	}
+	for (auto& node : other.input_nodes_list)
+	{
+		input_nodes_list.insert(std::make_pair(node.first, node_map[node.first]));
+	}
+	for (auto& node : other.output_nodes_list)
+	{
+		output_nodes_list.insert(std::make_pair(node.first, node_map[node.first]));
+	}
+
 	for (auto& connection : other.connections)
 	{
 		NodeConnection* newCon = add_connection(node_map[connection->in->index], node_map[connection->out->index], connection->weight);
@@ -111,16 +133,28 @@ NEATNN& NEATNN::operator=(const NEATNN & other)
 void NEATNN::execute(std::vector<float> input)
 {
 	// Check that input is correct and set the value to the input neurons
-	if (input.size() != input_nodes_num)
+	if (input.size() != (input_nodes_list.size() - 1))
 	{
 		FLog(FLog::FAILURE, "Input vector doesn't match number of input nodes");
 		return;
 	}
 
-	for (int i = 0; i < input_nodes_num; i++)
+	// Add input values
+	int i = 0;
+	for (auto& node : input_nodes_list)
 	{
-		nodes_list.at(i)->value = input.at(i);
-		nodes_list.at(i)->activated = true;
+		if (i < input.size())
+		{
+			node.second->value = input.at(i);
+			node.second->activated = true;
+		}
+		else
+		{
+			node.second->value = 1.0f;
+			node.second->activated = true;
+		}
+
+		i++;
 	}
 
 	// While any output node is not activated
@@ -131,7 +165,7 @@ void NEATNN::execute(std::vector<float> input)
 		for (auto& current_node : nodes_list)
 		{
 			// If not an input node
-			if(current_node->index >= input_nodes_num)
+			if(input_nodes_list.find(current_node->index) == input_nodes_list.end())
 			{
 				current_node->activated = false;
 				current_node->activation_sum = 0;
@@ -150,7 +184,7 @@ void NEATNN::execute(std::vector<float> input)
 		for (auto& current_node : nodes_list)
 		{
 			// If not an input node
-			if (current_node->index >= input_nodes_num)
+			if (input_nodes_list.find(current_node->index) == input_nodes_list.end())
 			{
 				current_node->value = std::max(0.0f, current_node->activation_sum); // RELU
 			}
@@ -158,9 +192,9 @@ void NEATNN::execute(std::vector<float> input)
 
 		//Check if all outputs have been activated
 		outputs_down = false;
-		for (int i = input_nodes_num; i < output_nodes_num + input_nodes_num; i++)
+		for (auto& node_it : output_nodes_list)
 		{
-			if (nodes_list.at(i)->activated = false)
+			if (node_it.second->activated = false)
 			{
 				outputs_down = true;
 				break;
@@ -172,13 +206,13 @@ void NEATNN::execute(std::vector<float> input)
 std::vector<float> NEATNN::getOutput(const Activation_function a_func)
 {
 	std::vector<float> toRet;
-	for (int i = input_nodes_num; i < output_nodes_num + input_nodes_num; i++)
+	for (auto& node_it : output_nodes_list)
 	{
 		if(a_func == Activation_function::RELU)
-			toRet.emplace_back(nodes_list.at(i)->value);
+			toRet.emplace_back(node_it.second->value);
 		else if (a_func == Activation_function::TANH)
 		{
-			float value = (std::exp(nodes_list.at(i)->activation_sum) - std::exp(-nodes_list.at(i)->activation_sum)) / (std::exp(nodes_list.at(i)->activation_sum) + std::exp(-nodes_list.at(i)->activation_sum));
+			float value = (std::exp(node_it.second->activation_sum) - std::exp(-node_it.second->activation_sum)) / (std::exp(node_it.second->activation_sum) + std::exp(-node_it.second->activation_sum));
 			toRet.emplace_back(value);
 		}
 	}
@@ -314,8 +348,16 @@ NEATNN NEATNN::crossOver(const NEATNN & parent2)
 		connection->out->incoming_connections.push_back(connection);
 	}
 
-	child.input_nodes_num = input_nodes_num;
-	child.output_nodes_num = output_nodes_num;
+	// Set input and output nodes maps
+	for (auto& node : input_nodes_list)
+	{
+		child.input_nodes_list.insert(std::make_pair(node.first, nodes_copied[node.second->index]));
+	}
+	for (auto& node : output_nodes_list)
+	{
+		child.output_nodes_list.insert(std::make_pair(node.first, nodes_copied[node.second->index]));
+	}
+
 	child.node_index = node_index >= parent2.node_index ? node_index : parent2.node_index;
 
 	// NOTE - When returning the child the copy iteration is in charge of removing recursive connections
@@ -341,7 +383,10 @@ void NEATNN::mutate()
 		{
 			// Choose nodes
 			Node* in_node = nodes_list.at(rand_generator.randomInteger(0, nodes_list.size() - 1));
-			Node* out_node = nodes_list.at(rand_generator.randomInteger(input_nodes_num, nodes_list.size() - 1)); // Dont include input nodes
+			Node* out_node;
+			do {
+				out_node = nodes_list.at(rand_generator.randomInteger(0, nodes_list.size() - 1)); // Dont include input nodes
+			} while (input_nodes_list.find(out_node->index) != input_nodes_list.end());
 			// Search if connection already exits
 			bool exists = false;
 			for (auto it : out_node->incoming_connections)

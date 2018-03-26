@@ -32,7 +32,6 @@ public:
 	void mutate();
 
 private:
-	int input_nodes_num, output_nodes_num;
 	int node_index; // Keeps track of the maximun index to give to a node
 
 	struct Node;
@@ -65,6 +64,7 @@ private:
 		bool activated;
 	};
 	std::vector<Node*> nodes_list;
+	std::unordered_map<short int, Node*> input_nodes_list, output_nodes_list; // Auxiliary map for fast access to input/output nodes
 	std::vector<NodeConnection*> connections;
 
 

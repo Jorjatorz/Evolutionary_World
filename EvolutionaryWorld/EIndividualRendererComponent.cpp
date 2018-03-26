@@ -20,9 +20,9 @@ EIndividualRendererComponent::EIndividualRendererComponent(Object* owner)
 
 		// Set vertices
 		const GLfloat vertex_array[] = {
-			0.0f, 0.0f, 0.0f,
-			20.0f, 0.0f, 0.0f,
-			10.0f,  20.0f, 0.0f,
+			-10.0f, -10.0f, 0.0f,
+			10.0f, -10.0f, 0.0f,
+			0.0f,  10.0f, 0.0f,
 		};
 
 
@@ -67,6 +67,11 @@ void EIndividualRendererComponent::render(const Matrix4& projection)
 	glBindVertexArray(0);
 
 	shader->unBind();
+}
+
+void EIndividualRendererComponent::setColor(const Vector3 & newColor)
+{
+	color = newColor;
 }
 
 EIndividualRendererComponent * EIndividualRendererComponent::clone(Object * newOwner) const

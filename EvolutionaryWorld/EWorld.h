@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Singleton.h"
+
 // Interface class that defines a world
-class EWorld
+class EWorld : public Singleton<EWorld>
 {
 public:
 	EWorld();

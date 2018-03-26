@@ -16,6 +16,8 @@ public:
 
 	void render(const Matrix4& projection) override;
 
+	void setColor(const Vector3& newColor);
+
 private:
 	Vector3 color;
 

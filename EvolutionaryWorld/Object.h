@@ -21,6 +21,10 @@ public:
 	template <typename T>
 	void removeComponentByClass();
 
+	// Returns a component given its class
+	template <typename T>
+	T* getComponentByClass();
+
 	FTransform* getTransform_pointer();
 
 protected:
@@ -44,11 +48,28 @@ inline void Object::removeComponentByClass()
 {
 	for (auto it = components_list.begin(); it != components_list.end(); ++it)
 	{
-		if (dynamic_cast<T>(*it) != nullptr)
+		if (dynamic_cast<T*>(*it) != nullptr)
 		{
 			delete *it;
 			components_list.erase(it);
 			return;
 		}
 	}
+}
+
+template<typename T>
+inline T* Object::getComponentByClass()
+{
+	T* toReturn = nullptr;
+	for (auto it = components_list.begin(); it != components_list.end(); ++it)
+	{
+		T* elem = dynamic_cast<T*>(*it);
+		if (elem != nullptr)
+		{
+			toReturn = elem;
+			break;
+		}
+	}
+
+	return toReturn;
 }
