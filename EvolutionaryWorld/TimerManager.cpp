@@ -65,3 +65,8 @@ unsigned int TimerManager::getTotalExecutionTime()
 {
 	return SDL_GetTicks();
 }
+
+float TimerManager::getWorldDeltaSeconds()
+{
+	return _deltaTimeLastFrame / 1000.0f;
+}

@@ -13,13 +13,16 @@ public:
 	TimerManager();
 	~TimerManager();
 	
-	//Return the total amount of time since start
+	// Return the total amount of time since start
 	static unsigned int getTotalExecutionTime();
-	//Return the last frame delta time
-	int getDeltaTime()
+	// Return the last frame delta time
+	inline int getDeltaTime()
 	{
 		return _deltaTimeLastFrame;
 	}
+
+	// Return the world delta seconds
+	float getWorldDeltaSeconds();
 
 	// Creates a norma timer
 	Timer* addTimer()

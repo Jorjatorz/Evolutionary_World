@@ -17,7 +17,7 @@ EWorld_food::EWorld_food()
 	generation_timer = TimerManager::getInstance()->addTimer();
 
 	// Add spawner
-	TimerManager::getInstance()->addTimer(this, &EWorld_food::spawnFood, 250, true);
+	TimerManager::getInstance()->addTimer(this, &EWorld_food::spawnFood, 100, true);
 }
 
 

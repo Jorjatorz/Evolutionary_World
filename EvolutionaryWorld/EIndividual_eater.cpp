@@ -8,6 +8,7 @@
 #include "FoodDetectorComponent.h"
 #include "OFood.h"
 #include "EIndividualRendererComponent.h"
+#include "TimerManager.h"
 
 EIndividual_eater::EIndividual_eater()
 	:EIndividual_eater(0, 0)
@@ -53,7 +54,7 @@ void EIndividual_eater::evaluate()
 {
 	bool eaten;
 	OFood* food = food_detector->getClosestFood(eaten);
-	float velocity = 2.0f;
+	float velocity = 0.0f;
 	if (food != nullptr)
 	{
 		Vector3 target = Vector3(food->getTransform_pointer()->getPositionPtr()->x, food->getTransform_pointer()->getPositionPtr()->y, 0.0);
@@ -80,19 +81,21 @@ void EIndividual_eater::evaluate()
 		nn.execute(std::initializer_list<float>{angle});
 
 		std::vector<float> output = nn.getOutput(NEATNN::Activation_function::TANH);
-		transform.rotate(Quaternion(output.at(0) * 180.0f, Vector3(0.0, 0.0, 1.0)));
+		transform.rotate(Quaternion(output.at(0) * 180.0f * 3 * TimerManager::getInstance()->getWorldDeltaSeconds(), Vector3(0.0, 0.0, 1.0)));
 		velocity = output.at(1);
 
 		//fitness += 1 - std::abs(angle);
 	}
 	else if (eaten)
 	{
+		velocity = 0.25;
 		health += 0.5;
 		health = health > 1.0f ? health = 1.0 : health;
 	}
 
-	transform.translate(transform.getRotationQuaternion() * Vector3(0.0, velocity*5, 0.0));
-	health -= 0.005;
+	velocity = velocity * 280 * TimerManager::getInstance()->getWorldDeltaSeconds(); // Frame independent
+	transform.translate(transform.getRotationQuaternion() * Vector3(0.0, velocity, 0.0));
+	health -= 0.125 * TimerManager::getInstance()->getWorldDeltaSeconds();
 	this->getComponentByClass<EIndividualRendererComponent>()->setColor(Vector3(1.0f - health, health, 0.0));
 
 	fitness++;
