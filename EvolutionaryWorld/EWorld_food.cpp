@@ -10,14 +10,14 @@ EWorld_food::EWorld_food()
 {
 	for (int i = 0; i < 50; i++)
 	{
-		population.emplace_back(new EIndividual_eater(1, 2));
+		population.emplace_back(new EIndividual_eater(2, 2));
 	}
 	evaluate();
 
 	generation_timer = TimerManager::getInstance()->addTimer();
 
 	// Add spawner
-	TimerManager::getInstance()->addTimer(this, &EWorld_food::spawnFood, 100, true);
+	TimerManager::getInstance()->addTimer(this, &EWorld_food::spawnFood, 25.0f, true);
 }
 
 

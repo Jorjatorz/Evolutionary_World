@@ -53,11 +53,12 @@ bool EIndividual_eater::isDead()
 void EIndividual_eater::evaluate()
 {
 	bool eaten;
-	OFood* food = food_detector->getClosestFood(eaten);
+	OFood eaten_food;
+	OFood* food_ptr = food_detector->getClosestFood(eaten, eaten_food);
 	float velocity = 0.0f;
-	if (food != nullptr)
+	if (food_ptr != nullptr)
 	{
-		Vector3 target = Vector3(food->getTransform_pointer()->getPositionPtr()->x, food->getTransform_pointer()->getPositionPtr()->y, 0.0);
+		Vector3 target = Vector3(food_ptr->getTransform_pointer()->getPositionPtr()->x, food_ptr->getTransform_pointer()->getPositionPtr()->y, 0.0);
 
 		// Compute angle between individual and objective
 		Vector3 dir = transform.getRotationQuaternion() * Vector3(0.0, 1.0, 0.0);
@@ -78,7 +79,7 @@ void EIndividual_eater::evaluate()
 			angle = -angle;
 		angle = angle / 180.0f; // Set value from -1 to 1
 
-		nn.execute(std::initializer_list<float>{angle});
+		nn.execute(std::initializer_list<float>{angle, (float)food_ptr->type});
 
 		std::vector<float> output = nn.getOutput(NEATNN::Activation_function::TANH);
 		transform.rotate(Quaternion(output.at(0) * 180.0f * 3 * TimerManager::getInstance()->getWorldDeltaSeconds(), Vector3(0.0, 0.0, 1.0)));
@@ -89,16 +90,20 @@ void EIndividual_eater::evaluate()
 	else if (eaten)
 	{
 		velocity = 0.25;
-		health += 0.5;
+		if (eaten_food.type == 0)
+			health += 0.5;
+		else
+			health -= 1.00;
 		health = health > 1.0f ? health = 1.0 : health;
 	}
 
 	velocity = velocity * 280 * TimerManager::getInstance()->getWorldDeltaSeconds(); // Frame independent
 	transform.translate(transform.getRotationQuaternion() * Vector3(0.0, velocity, 0.0));
+
 	health -= 0.125 * TimerManager::getInstance()->getWorldDeltaSeconds();
 	this->getComponentByClass<EIndividualRendererComponent>()->setColor(Vector3(1.0f - health, health, 0.0));
 
-	fitness++;
+	fitness += TimerManager::getInstance()->getWorldSpeed();
 }
 
 EIndividual * EIndividual_eater::crossOver(EIndividual * other)

@@ -7,7 +7,8 @@
 
 TimerManager::TimerManager()
 	:_nextId(0),
-	_deltaTimeLastFrame(0)
+	_deltaTimeLastFrame(0),
+	worldSpeed(1)
 {
 }
 
@@ -68,5 +69,10 @@ unsigned int TimerManager::getTotalExecutionTime()
 
 float TimerManager::getWorldDeltaSeconds()
 {
-	return _deltaTimeLastFrame / 1000.0f;
+	return _deltaTimeLastFrame / 1000.0f * worldSpeed;
+}
+
+float TimerManager::getWorldSpeed()
+{
+	return worldSpeed;
 }

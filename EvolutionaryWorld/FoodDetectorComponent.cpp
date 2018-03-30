@@ -12,7 +12,7 @@ FoodDetectorComponent::~FoodDetectorComponent()
 {
 }
 
-OFood* FoodDetectorComponent::getClosestFood(bool& eaten)
+OFood* FoodDetectorComponent::getClosestFood(bool& eaten, OFood& foodEaten)
 {
 	OFood* closest = nullptr;
 	eaten = false;
@@ -37,8 +37,10 @@ OFood* FoodDetectorComponent::getClosestFood(bool& eaten)
 
 
 		// If the distance is small, eat it
-		if (minDistance < 5.0f)
+		if (minDistance < 10.0f)
 		{
+			foodEaten = *closest;
+
 			delete closest;
 			closest = nullptr;
 			foods->erase(minDistance_it);

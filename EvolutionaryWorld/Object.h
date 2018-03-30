@@ -11,6 +11,7 @@ class Object
 public:
 	Object();
 	Object(const Object& other);
+	void operator=(const Object& other);
 	virtual ~Object();
 
 	// Adds a components to the Actor (it doesnt check for duplicates)

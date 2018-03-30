@@ -8,7 +8,17 @@ OFood::OFood()
 	RandomGenerator generator;
 
 	auto* comp = this->addComponent<EIndividualRendererComponent>();
-	comp->setColor(Vector3(0.0, 0.0, 1.0));
+	if (generator.randomFloat() < 0.95)
+	{
+		type = 0;
+		comp->setColor(Vector3(0.0, 0.0, 1.0));
+	}
+	else
+	{
+		type = 1;
+		comp->setColor(Vector3(0.0, 1.0, 1.0));
+	}
+	
 	transform.setPosition(Vector3(generator.randomInteger(0, 1080), generator.randomInteger(0, 720), 0.0));
 	transform.setScale(Vector3(0.5));
 }

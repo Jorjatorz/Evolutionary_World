@@ -7,5 +7,7 @@ class OFood : public Object
 public:
 	OFood();
 	~OFood();
+
+	int type; // 0 good, 1 poison
 };
 

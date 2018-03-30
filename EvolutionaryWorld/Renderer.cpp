@@ -4,7 +4,7 @@
 #include <GL\glew.h>
 
 #include "Vector3.h"
-
+#include "TimerManager.h"
 #include "RenderingComponent.h"
 
 Renderer::Renderer()
@@ -73,6 +73,14 @@ void Renderer::handleInput()
 		{
 			mouseX = mEvent.motion.x;
 			mouseY = 720 - mEvent.motion.y;
+		}
+
+		if (mEvent.type == SDL_KEYDOWN)
+		{
+			if (mEvent.key.keysym.sym == SDLK_UP)
+				TimerManager::getInstance()->worldSpeed++;
+			if (mEvent.key.keysym.sym == SDLK_DOWN)
+				TimerManager::getInstance()->worldSpeed--;
 		}
 	}
 }

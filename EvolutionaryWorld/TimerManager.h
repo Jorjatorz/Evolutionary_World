@@ -24,6 +24,10 @@ public:
 	// Return the world delta seconds
 	float getWorldDeltaSeconds();
 
+	// Returns the world speed
+	float getWorldSpeed();
+	float worldSpeed;
+
 	// Creates a norma timer
 	Timer* addTimer()
 	{

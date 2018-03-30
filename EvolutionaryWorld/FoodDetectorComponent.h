@@ -10,7 +10,7 @@ public:
 	~FoodDetectorComponent();
 
 	// Returns the closest food to the owner object
-	OFood* getClosestFood(bool& eaten);
+	OFood* getClosestFood(bool& eaten, OFood& foodEaten);
 
 	virtual Component* clone(Object* newOwner) const;
 };
