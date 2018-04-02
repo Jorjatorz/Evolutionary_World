@@ -49,7 +49,7 @@ void TimerManager::tick(int deltaTime)
 	//Tick all timers
 	for (auto const &it : _timersList)
 	{
-		if (it.second->tick(deltaTime))
+		if (it.second->tick(deltaTime * worldSpeed))
 		{
 			timersToErase.push(it.second->getId());
 		}

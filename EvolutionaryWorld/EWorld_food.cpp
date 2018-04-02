@@ -17,7 +17,7 @@ EWorld_food::EWorld_food()
 	generation_timer = TimerManager::getInstance()->addTimer();
 
 	// Add spawner
-	TimerManager::getInstance()->addTimer(this, &EWorld_food::spawnFood, 25.0f, true);
+	TimerManager::getInstance()->addTimer(this, &EWorld_food::spawnFood, 100.0f, true);
 }
 
 
@@ -71,34 +71,49 @@ void EWorld_food::evaluate()
 
 EIndividual* EWorld_food::selectIndividual()
 {
-	// Tournament selection
-	EIndividual* a = population.at(rand_generator.randomInteger(0, population.size() - 1));
-	EIndividual* b = population.at(rand_generator.randomInteger(0, population.size() - 1));
-	EIndividual* c = population.at(rand_generator.randomInteger(0, population.size() - 1));
+	// K-Tournament selection
+	int k = rand_generator.randomInteger(2, std::min(10u, population.size() - 1)); // Set randomly the number of individuals to compare
+	EIndividual* selected = population.at(rand_generator.randomInteger(0, population.size() - 1));
+	float maxFitness = selected->getFitness();
+	for (int i = 1; i < k; i++)
+	{
+		EIndividual* ind = population.at(rand_generator.randomInteger(0, population.size() - 1));
+		if (ind->getFitness() > maxFitness)
+		{
+			selected = ind;
+			maxFitness = ind->getFitness();
+		}
+	}
 
-	// Maximizacion
-	if (a->getFitness() > b->getFitness())
-	{
-		if (a->getFitness() > c->getFitness())
-		{
-			return a;
-		}
-		else
-		{
-			return c;
-		}
-	}
-	else
-	{
-		if (c->getFitness() > b->getFitness())
-		{
-			return c;
-		}
-		else
-		{
-			return b;
-		}
-	}
+	return selected;
+	// Tournament selection
+	//EIndividual* a = population.at(rand_generator.randomInteger(0, population.size() - 1));
+	//EIndividual* b = population.at(rand_generator.randomInteger(0, population.size() - 1));
+	//EIndividual* c = population.at(rand_generator.randomInteger(0, population.size() - 1));
+
+	//// Maximizacion
+	//if (a->getFitness() > b->getFitness())
+	//{
+	//	if (a->getFitness() > c->getFitness())
+	//	{
+	//		return a;
+	//	}
+	//	else
+	//	{
+	//		return c;
+	//	}
+	//}
+	//else
+	//{
+	//	if (c->getFitness() > b->getFitness())
+	//	{
+	//		return c;
+	//	}
+	//	else
+	//	{
+	//		return b;
+	//	}
+	//}
 }
 
 void EWorld_food::crossOver_and_mutation()

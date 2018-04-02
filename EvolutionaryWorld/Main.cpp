@@ -25,11 +25,11 @@ int main(int argc, char* argv[])
 		render.swapBuffers();
 
 		deltaTime = time_manager.getTotalExecutionTime() - frame_start;
-		if (deltaTime < 1000 / 60.0f) // 60 fps
-		{
-			SDL_Delay(1000 / 60.0f - deltaTime);
-			deltaTime = 1000 / 60.0f;
-		}
+		//if (deltaTime < 1000 / 60.0f) // 60 fps
+		//{
+		//	SDL_Delay(1000 / 60.0f - deltaTime);
+		//	deltaTime = 1000 / 60.0f;
+		//}
 	}
 
 	delete world;
