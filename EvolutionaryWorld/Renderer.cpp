@@ -6,6 +6,7 @@
 #include "Vector3.h"
 #include "TimerManager.h"
 #include "RenderingComponent.h"
+#include "UIManager.h"
 
 Renderer::Renderer()
 {
@@ -18,6 +19,8 @@ Renderer::Renderer()
 	//create the window
 	window_SDL = SDL_CreateWindow("Evolutionary World", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1080, 720, SDL_WINDOW_OPENGL);
 	//create the opengl context
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	context_SDL_GL = SDL_GL_CreateContext(window_SDL);
 
 	// Set OPENGL attributes
@@ -29,6 +32,7 @@ Renderer::Renderer()
 	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	SDL_GL_SetSwapInterval(0); //Disable VSync
 
 	glewExperimental = GL_TRUE;
@@ -49,11 +53,16 @@ Renderer::Renderer()
 
 	projectionMatrix = Matrix4::createOrthoMatrix(1080, 720, 0.0, 1000);
 	projectionMatrix.translate(Vector3(-1080 / 2.0, -720 / 2.0, 0.0)); // Put the camera centered so the bottom left corner is (0.0, 0.0)
+
+	// Create UI manager
+	uiManager = new UIManager(window_SDL);
 }
 
 
 Renderer::~Renderer()
 {
+	delete uiManager;
+
 	//Delete the context
 	SDL_GL_DeleteContext(context_SDL_GL);
 
@@ -69,6 +78,9 @@ void Renderer::handleInput()
 	SDL_Event mEvent;
 	while (SDL_PollEvent(&mEvent))
 	{
+		// Forward events to UIManager
+		uiManager->processInputEvent(&mEvent);
+
 		if (mEvent.type == SDL_MOUSEMOTION)
 		{
 			mouseX = mEvent.motion.x;
@@ -96,6 +108,9 @@ void Renderer::renderFrame()
 	{
 		rComp->render(projectionMatrix);
 	}
+
+	// Render ui - by default tick is 60fps
+	uiManager->processAndRenderWidgets(1.0f / 60.0f);
 }
 
 void Renderer::swapBuffers()

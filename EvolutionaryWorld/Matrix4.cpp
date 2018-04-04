@@ -4,6 +4,7 @@
 
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\matrix_inverse.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Matrix4::Matrix4()
 	:_GLMMatrix(1.0)
@@ -14,6 +15,11 @@ Matrix4::Matrix4(float diagonalValue)
 	: _GLMMatrix(diagonalValue)
 {
 
+}
+
+Matrix4::Matrix4(float matrix[4][4])
+{
+	_GLMMatrix = glm::make_mat4(&matrix[0][0]);
 }
 
 Matrix4::Matrix4(const glm::mat4 & mat)

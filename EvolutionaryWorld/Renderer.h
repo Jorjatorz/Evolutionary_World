@@ -6,6 +6,7 @@
 #include "Singleton.h"
 #include "Matrix4.h"
 class RenderingComponent;
+class UIManager;
 
 // Singleton class
 class Renderer : public Singleton<Renderer>
@@ -35,5 +36,7 @@ private:
 	std::vector<RenderingComponent*> renderingComponents_list;
 
 	Matrix4 projectionMatrix;
+
+	UIManager* uiManager;
 };
 
