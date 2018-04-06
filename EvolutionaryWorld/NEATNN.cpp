@@ -5,10 +5,10 @@
 #include <unordered_set>
 #include "FLog.h"
 
-const float NEATNN::weight_mutation_probability = 0.5;
-const float NEATNN::add_connection_probability = 0.25;
-const float NEATNN::remove_connection_probability = 0.05;
-const float NEATNN::add_node_probability = 0.05;
+float NEATNN::weight_mutation_probability = 0.5;
+float NEATNN::add_connection_probability = 0.25;
+float NEATNN::remove_connection_probability = 0.05;
+float NEATNN::add_node_probability = 0.05;
 
 NEATNN::NEATNN()
 {

@@ -74,3 +74,13 @@ int Timer::getTime_milliseconds()
 {
 	return _deltaTime;
 }
+
+int Timer::getTimerDuration()
+{
+	return _timerDuration;
+}
+
+void Timer::setTimerDuration(int newDuration)
+{
+	_timerDuration = newDuration;
+}

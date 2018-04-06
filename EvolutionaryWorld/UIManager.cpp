@@ -82,6 +82,12 @@ UIManager::~UIManager()
 	glDeleteTextures(1, &fontTexture);
 	glDeleteBuffers(1, &vboBuffer);
 	glDeleteBuffers(1, &elementBuffer);
+
+	// Delete manually rest of widgets
+	for (auto& it : widgets_map)
+	{
+		delete it.second;
+	}
 }
 
 void UIManager::processInputEvent(SDL_Event* event)

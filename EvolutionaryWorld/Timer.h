@@ -20,7 +20,12 @@ public:
 	//Resume the timer (if paused)
 	void resume();
 
+	// Returns the current delta time in milliseconds
 	int getTime_milliseconds();
+
+	// Returns the timer max duration in milliseconds
+	int getTimerDuration();
+	void setTimerDuration(int newDuration);
 
 
 private:

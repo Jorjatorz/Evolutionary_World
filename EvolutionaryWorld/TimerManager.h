@@ -26,7 +26,7 @@ public:
 
 	// Returns the world speed
 	float getWorldSpeed();
-	float worldSpeed;
+	void setWorldSpeed(float ws);
 
 	// Creates a norma timer
 	Timer* addTimer()
@@ -60,6 +60,9 @@ public:
 private:
 	//Last frame delta time
 	float _deltaTimeLastFrame;
+
+	// World speed modifier
+	float worldSpeed;
 
 	//Container of all the created timers. ID/TIMER
 	std::unordered_map<unsigned short int, Timer*> _timersList;

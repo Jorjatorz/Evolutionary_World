@@ -76,3 +76,8 @@ float TimerManager::getWorldSpeed()
 {
 	return worldSpeed;
 }
+
+void TimerManager::setWorldSpeed(float ws)
+{
+	worldSpeed = ws;
+}
